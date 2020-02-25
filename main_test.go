@@ -65,12 +65,12 @@ func TestCountWord(t *testing.T) {
 }
 
 func TestScanLines(t *testing.T) {
-	cases := map[string]struct{
+	cases := map[string]struct {
 		count int
-		err error
+		err   error
 	}{
-		"one": {1, nil},
-		"two": {2, nil},
+		"one":   {1, nil},
+		"two":   {2, nil},
 		"three": {3, nil},
 	}
 	readerSource := "one\ntwo\nthree\n"
@@ -112,7 +112,7 @@ func TestCountRoutine(t *testing.T) {
 	payload := "GoGoGo"
 	wantedCount := 3
 	ctx := context.Background()
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request){
+	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(payload))
 	})
 	server := httptest.NewServer(handler)
@@ -132,9 +132,3 @@ func TestCountRoutine(t *testing.T) {
 		assert.Nil(t, err)
 	})
 }
-
-
-
-
-
-

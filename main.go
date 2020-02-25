@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"context"
+	"flag"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -23,12 +24,14 @@ type countHandler func(reader io.Reader) (int, error)
 type countRoutine func(ctx context.Context, url string) (int, error)
 
 func main() {
+	concurrency := flag.Int("c", 5,
+		"sets number of goroutines fetching data and counting words concurrently")
 	ctx := context.Background()
 	results := make(chan *result)
 	reader := strings.NewReader("https://golang.org\nhttps://golang.org\n")
 	//reader := os.Stdin
 	routine := newCountRoutine(countWord("Go"))
-	go scanLines(ctx, reader, routine,5, results)
+	go scanLines(ctx, reader, routine, *concurrency, results)
 	resultHandle(ctx, results)
 }
 
@@ -48,6 +51,7 @@ func resultHandle(ctx context.Context, results chan *result) {
 			fmt.Printf("Count for %v: %v\n", r.url, r.count)
 			total += r.count
 		case <-ctx.Done():
+			fmt.Printf("Interrupted: %v", ctx.Err())
 			return
 		}
 	}
@@ -106,6 +110,7 @@ func newCountRoutine(handler countHandler) countRoutine {
 	}
 }
 
+// countSubstr returns countHandler function for specific substring counting
 func countSubstr(substr string) countHandler {
 	return func(reader io.Reader) (i int, err error) {
 		bytes, err := ioutil.ReadAll(reader)
@@ -116,6 +121,7 @@ func countSubstr(substr string) countHandler {
 	}
 }
 
+// countWord returns countHandler function for specific word counting
 func countWord(word string) countHandler {
 	return func(reader io.Reader) (int, error) {
 		counter := 0

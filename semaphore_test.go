@@ -27,7 +27,7 @@ func TestNewSemaphore(t *testing.T) {
 
 	t.Run("Semaphore with negative capacity fails", func(t *testing.T) {
 		cap := -1
-		assert.Panics(t, func(){
+		assert.Panics(t, func() {
 			newSemaphore(cap)
 		})
 	})
@@ -46,7 +46,7 @@ func TestWaitOne(t *testing.T) {
 }
 
 func TestRelease(t *testing.T) {
-	t.Run("Successfull release of non-empty semaphore", func(t *testing.T){
+	t.Run("Successfull release of non-empty semaphore", func(t *testing.T) {
 		cap := 1
 		s := newSemaphore(cap)
 		ctx := context.Background()
