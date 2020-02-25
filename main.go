@@ -8,6 +8,7 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"strings"
 	"sync"
 	"time"
@@ -26,10 +27,10 @@ type countRoutine func(ctx context.Context, url string) (int, error)
 func main() {
 	concurrency := flag.Int("c", 5,
 		"sets number of goroutines fetching data and counting words concurrently")
+	flag.Parse()
 	ctx := context.Background()
 	results := make(chan *result)
-	reader := strings.NewReader("https://golang.org\nhttps://golang.org\n")
-	//reader := os.Stdin
+	reader := os.Stdin
 	routine := newCountRoutine(countWord("Go"))
 	go scanLines(ctx, reader, routine, *concurrency, results)
 	resultHandle(ctx, results)
